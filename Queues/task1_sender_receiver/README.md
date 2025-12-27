@@ -1,4 +1,4 @@
-1. Sender periodically sends an integer
+Sender periodically sends an integer
    Receiver blocks on the queue
 
 break SenderTask
