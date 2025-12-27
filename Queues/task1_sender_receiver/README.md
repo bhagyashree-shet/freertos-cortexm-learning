@@ -1,4 +1,4 @@
-#########################################################################################################################
+###Queue with single sender and receiver
 Sender periodically sends an integer
 Receiver blocks on the queue
 
@@ -11,4 +11,11 @@ Inspect - p *pxCurrentTCB -> pcTaskName = "Receiver" , xStateListItem.pvContaine
 continue -> Receiver blocks.
 p uxCurrentNumberOfTasks -> number of tasks = 3 ( in our case:Sender , Receiver , Idle)
 p *xQueue ->  xTasksWaitingToReceive -> Receiver is blocked on the queue.Not on a delay list.Not on Ready list.
-############################################################################################################################
+
+### Queue Blocking and Wake-Up
+- Receiver blocks on empty queue
+- Task moves to queue receive waiting list
+- Sender sends data → kernel wakes receiver
+- With timeout, receiver may wake due to tick expiry
+- Queue-based blocking is event-driven and deterministic
+
