@@ -1,16 +1,40 @@
-###Queue with single sender and receiver
-Sender periodically sends an integer
-Receiver blocks on the queue
+# Queue with Single Sender and Receiver
 
-break SenderTask
-break ReceiverTask
-continue ->         
-Hit Receive breakpoint - xQueueReceive(xQueue, &received, portMAX_DELAY);
-Inspect - p *pxCurrentTCB -> pcTaskName = "Receiver" , xStateListItem.pvContainer pointing to a Ready list -> This is Receiver before blocking.
+Sender periodically sends an integer.  
+Receiver blocks on the queue.
 
-continue -> Receiver blocks.
-p uxCurrentNumberOfTasks -> number of tasks = 3 ( in our case:Sender , Receiver , Idle)
-p *xQueue ->  xTasksWaitingToReceive -> Receiver is blocked on the queue.Not on a delay list.Not on Ready list.
+---
+
+## Debug Flow
+
+### Break SenderTask  
+### Break ReceiverTask  
+
+continue ->
+Hit Receive breakpoint:
+xQueueReceive(xQueue, &received, portMAX_DELAY);
+Inspect:
+p *pxCurrentTCB
+Observed:
+pcTaskName = "Receiver"
+xStateListItem.pvContainer -> Ready list
+This is the Receiver task before blocking.
+
+continue ->
+Receiver blocks.
+Inspect number of tasks:
+p uxCurrentNumberOfTasks
+number of tasks = 3
+(Sender, Receiver, Idle)
+
+Inspect queue:
+p *xQueue
+Observed:
+xTasksWaitingToReceive -> Receiver
+Receiver is:
+Not on Delay list
+Not on Ready list
+Blocked on Queue Receive waiting list
 
 ### Queue Blocking and Wake-Up
 - Receiver blocks on empty queue
