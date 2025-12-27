@@ -1,36 +1,47 @@
-- Queue with single sender and receiver  
+# FreeRTOS Queue Debug Notes — Single Sender & Receiver
+
+**Scenario**
+- Queue with single sender and single receiver  
 - Sender periodically sends an integer  
 - Receiver blocks on the queue  
 
-- break SenderTask  
-- break ReceiverTask  
+**Debug Setup**
+- `break SenderTask`  
+- `break ReceiverTask`  
 
-- continue ->  
+**Execution Flow**
+- `continue ->`  
 
-- Hit Receive breakpoint  
-  - xQueueReceive(xQueue, &received, portMAX_DELAY);
+**Receive API Breakpoint Hit**
+- `xQueueReceive(xQueue, &received, portMAX_DELAY);`  
 
-- Inspect  
-  - p *pxCurrentTCB  
-  - pcTaskName = "Receiver"
-  - xStateListItem.pvContainer -> Ready list  
-  - This is Receiver before blocking  
+**TCB Inspection (Before Blocking)**
+- `p *pxCurrentTCB`  
+- **pcTaskName** = `"Receiver"`  
+- **xStateListItem.pvContainer** → Ready list  
+- Receiver task is **running and ready** before blocking  
 
-- continue ->  
+**Continue Execution**
+- `continue ->`  
 
-- Receiver blocks  
+**Receiver Blocking Observed**
+- Receiver blocks on empty queue  
 
-- Inspect task count  
-  - p uxCurrentNumberOfTasks 
-  - number of tasks = 3  
-  - Sender, Receiver, Idle  
+**Task Count Inspection**
+- `p uxCurrentNumberOfTasks`  
+- **Number of tasks** = `3`  
+  - Sender  
+  - Receiver  
+  - Idle  
 
-- Inspect queue  
-  - p *xQueue
-  - xTasksWaitingToReceive -> Receiver
-  - Receiver is blocked on the queue  
-  - Not on delay list  
-  - Not on Ready list  
+**Queue Inspection**
+- `p *xQueue`  
+- **xTasksWaitingToReceive** → Receiver  
+- Receiver is:
+  - ❌ Not on Delay list  
+  - ❌ Not on Ready list  
+  - ✅ Blocked on Queue receive waiting list  
+ 
 
 ### Queue Blocking and Wake-Up
 - Receiver blocks on empty queue
