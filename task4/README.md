@@ -16,10 +16,9 @@
 
 
 vTaskDelay() causes an immediate blocking switch
-Preemption does not occur in task code
-SysTick decides when a task becomes READY
-PendSV performs all context switches
-Multiple PendSV executions can occur for different reasons:
-Blocking
-
-Preemption
+1.Preemption does not occur in task code
+2.SysTick decides when a task becomes READY
+3.PendSV performs all context switches
+4.Multiple PendSV executions can occur for different reasons:
+  Blocking
+  Preemption
