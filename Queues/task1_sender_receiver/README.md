@@ -38,9 +38,9 @@
 - `p *xQueue`  
 - **xTasksWaitingToReceive** → Receiver  
 - Receiver is:
-  - ❌ Not on Delay list  
-  - ❌ Not on Ready list  
-  - ✅ Blocked on Queue receive waiting list  
+  -  Not on Delay list  
+  -  Not on Ready list  
+  -  Blocked on Queue receive waiting list  
  
 
 ### Queue Blocking and Wake-Up
