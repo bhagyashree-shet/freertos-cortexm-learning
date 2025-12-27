@@ -21,6 +21,8 @@ xTaskCreate(ReceiveQueue , "ReceiveQueue" , 128 , NULL ,1 ,NULL);
 
 vTaskStartScheduler();
 
+        for(;;);
+
 }
 
 void SendQueue(void *params){
