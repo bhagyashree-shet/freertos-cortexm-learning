@@ -1,5 +1,3 @@
-#######################################################################################################################################################################
-
 1. break main
    continue   : Stop execution at main. Run until main.
 2. break vTaskStartScheduler
@@ -13,11 +11,11 @@
                                                 Displays task priority
                                                 xStateListItem indicates the task is in the Ready list
                                                 xEventListItem is empty (no blocking yet)
-#######################################################################################################################################################################
+
 main() is not a task; it only creates tasks and starts the scheduler.
 Tasks execute on PSP, not MSP.
 Tasks run in privileged mode by default in FreeRTOS.
 A task is represented by a TCB + stack, not just a function.
 Scheduler control begins at vTaskStartScheduler().
 
-#####################################################################################################################################################################
+
