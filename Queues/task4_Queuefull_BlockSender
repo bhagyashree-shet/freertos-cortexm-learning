@@ -1,0 +1,57 @@
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
+static void FastSender(void *params);
+static void SlowReceiver(void *params);
+static QueueHandle_t xQueue;
+
+
+int main(void){
+
+xQueue = xQueueCreate( 1, sizeof(int));
+xTaskCreate( FastSender , "FastSender" , 128 , NULL , 2 , NULL);
+xTaskCreate( SlowReceiver , "SlowReceiver" , 128 , NULL , 1 , NULL);
+
+if (xQueue ==NULL){
+      for(;;);
+
+}
+
+vTaskStartScheduler();
+
+for(;;);
+
+}
+
+
+void FastSender(void *params){
+
+int value = 0;
+
+while(1){
+xQueueSend(xQueue, &value, portMAX_DELAY);
+        value++;
+        /* No delay → sender is FAST */
+}
+}
+
+
+void SlowReceiver(void *params){
+int received;
+
+while(1){
+vTaskDelay(pdMS_TO_TICKS(2000));  // SLOW receiver
+        xQueueReceive(xQueue, &received, portMAX_DELAY);
+        __asm volatile("nop");  // breakpoint here
+
+
+}
+}
+
+
+/* Error Hooks */
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) { while(1); }
+void vApplicationMallocFailedHook(void) { while(1); }
+void vApplicationTickHook(void) {}
+void vApplicationIdleHook(void) {}
