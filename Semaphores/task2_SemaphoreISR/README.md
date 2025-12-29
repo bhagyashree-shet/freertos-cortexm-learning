@@ -1,4 +1,4 @@
-# FreeRTOS Debug Notes — Semaphore Given Before Task Blocks (Race Window)
+# FreeRTOS Debug Notes — Semaphore Given Before Task Blocks
 
 **Breakpoints**
 - `delete`
