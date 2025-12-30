@@ -1,88 +1,78 @@
-# FreeRTOS Debug Notes — Mutex + Priority Inheritance
+# FreeRTOS Debug Notes — Mutex and Priority Inheritance
 
-Breakpoints  
-break TaskLow  
-break TaskHigh  
-continue  
+**Breakpoints**
+- `break TaskLow`
+- `break TaskHigh`
+- `continue`
 
-Stops execution exactly where the mutex is taken and allows inspection of ownership and priority changes.
+**Why**
+- Stops execution exactly where the mutex is taken
+- Allows inspection of mutex ownership and task priority changes
 
-Inspect the currently running task  
+**Inspect the Currently Running Task**
+- `p *pxCurrentTCB`
 
-p *pxCurrentTCB  
+**What to Observe**
+- **pcTaskName** → which task is currently running  
+- **uxPriority** → current priority (may be inherited)  
+- **uxBasePriority** → original task priority  
+- **uxMutexesHeld** → number of mutexes currently held  
 
-Observe:  
-pcTaskName → which task is running  
-uxPriority → current priority (may be inherited)  
-uxBasePriority → original priority  
-uxMutexesHeld → number of mutexes held  
+**Key Learning**
+- **uxPriority may change**
+- **uxBasePriority never changes**
 
-Key fact:  
-uxPriority may change  
-uxBasePriority never changes  
+**Inspect the Mutex Internals**
+- `p *xMutex`
 
-Inspect mutex internals  
+**What to Observe**
+- **xSemaphore.xMutexHolder** → task holding the mutex  
+- **uxMessagesWaiting**
+  - `1` → mutex is free  
+  - `0` → mutex is taken  
+- **xTasksWaitingToReceive** → tasks blocked on the mutex  
 
-p *xMutex  
+- A mutex is implemented internally as a **queue**
+- Mutex ownership is **explicitly tracked** by the kernel
 
-Observe:  
-xSemaphore.xMutexHolder → task holding the mutex  
-uxMessagesWaiting  
-1 → mutex free  
-0 → mutex taken  
-xTasksWaitingToReceive → tasks blocked on mutex  
+**Observe TaskLow Taking the Mutex**
+- Step through the code:
+  - `step`
+  - `finish`
+- Inspect again:
+  - `p *pxCurrentTCB`
 
-Key fact:  
-A mutex is internally implemented as a queue  
-Mutex ownership is explicitly tracked  
+**Expected**
+- **uxMutexesHeld = 1**
+- **uxPriority    = 1**
 
-TaskLow takes the mutex  
+**Meaning**
+- TaskLow owns the mutex
+- No priority inheritance yet
 
-step  
-finish  
+**Observe TaskHigh Attempting to Take the Mutex**
+- `continue`
+- TaskHigh attempts to take the same mutex and blocks
+- Inspect:
+  - `p *pxCurrentTCB`
 
-Inspect again:  
+**Expected When Inheritance Happens**
+- **uxPriority     = 3** (boosted)  
+- **uxBasePriority = 1** (original)  
 
-p *pxCurrentTCB  
+**Meaning**
+- Priority inversion detected
+- Kernel temporarily boosts TaskLow’s priority
 
-Expected:  
-uxMutexesHeld = 1  
-uxPriority    = 1  
-uxBasePriority = 1  
+**After the Mutex Is Released**
+- `continue`
+- `p *pxCurrentTCB`
 
-Meaning:  
-TaskLow owns the mutex  
-No priority inheritance yet  
+**Expected**
+- **uxPriority     = 1**
+- **uxBasePriority = 1**
+- **uxMutexesHeld  = 0**
 
-TaskHigh attempts to take the mutex  
-
-continue  
-
-TaskHigh blocks on the mutex  
-
-Inspect current task:  
-
-p *pxCurrentTCB  
-
-Expected when inheritance happens:  
-uxPriority     = 3  
-uxBasePriority = 1  
-uxMutexesHeld  = 1  
-
-Meaning:  
-Priority inversion detected  
-Kernel temporarily boosts TaskLow’s priority  
-
-After mutex is released  
-
-continue  
-p *pxCurrentTCB  
-
-Expected:  
-uxPriority     = 1  
-uxBasePriority = 1  
-uxMutexesHeld  = 0  
-
-Meaning:  
-Inheritance removed  
-System restored to normal scheduling
+**Meaning**
+- Priority inheritance removed
+- System restored to normal scheduling
