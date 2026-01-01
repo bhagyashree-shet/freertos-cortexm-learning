@@ -35,6 +35,16 @@
 - Execution jumped directly to `EventTask`
 - `EventTask` hit the `nop` breakpoint
 
+  **Kernel Configuration**
+- `#define configUSE_TICK_HOOK             1`
+- `#define configUSE_TIMERS                1`
+- `#define INCLUDE_xTimerPendFunctionCall  1`
+
+  **Timer Service Task Configuration**
+- `#define configTIMER_TASK_PRIORITY    (configMAX_PRIORITIES - 1)`
+- `#define configTIMER_TASK_STACK_DEPTH 128`
+- `#define configTIMER_QUEUE_LENGTH     10`
+
 **Conclusion**
 - Event signaling from ISR is **deferred** via the Timer Service Task
 - ISR never directly modifies the event group
