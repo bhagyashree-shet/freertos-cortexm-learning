@@ -1,0 +1,11 @@
+Environment
+Architecture: ARM Cortex-M3
+RTOS: FreeRTOS Kernel (official GitHub)
+Toolchain: arm-none-eabi-gcc
+Emulator: QEMU (mps2-an385)
+Debugger: gdb-multiarch
+
+
+
+
+
