@@ -23,8 +23,7 @@ int main(void)
 /* Task that waits for ISR signal */
 static void HandlerTask(void *params)
 {
-    (void)params;
-
+    
     for (;;)
     {
         xSemaphoreTake(xBinarySemaphore, portMAX_DELAY);
